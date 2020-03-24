@@ -1,0 +1,45 @@
+version: '2.0'
+
+services:
+
+  lesense-batch:
+    image: lesense-batch
+    restart: always
+    build: './lesense-batch'
+    working_dir: /lesense-batch
+    ports:
+      - "6001:6001"
+    environment:
+      TZ: America/Sao_Paulo
+      SPRING_BOOT_ENVIRONMENT: Production
+      SPRING_APPLICATION_JSON: '{
+        "server.port": "6001",
+        "spring.datasource.hikari.connectionTimeout": "20000",
+        "spring.datasource.hikari.maximumPoolSize": "5",
+        "spring.datasource.url": "jdbc:postgresql://lesense.c4qodhewgrr2.sa-east-1.rds.amazonaws.com:5432/lesense?reWriteBatchedInserts=true",
+        "spring.datasource.username": "lesense",
+        "spring.datasource.password": "0hVZ9nM]40jMNfR",
+        "spring.jpa.properties.hibernate.temp.use_jdbc_metadata_defaults": " false",
+        "spring.jpa.properties.hibernate.dialect": "org.hibernate.dialect.PostgreSQL92Dialect",
+        "spring.jpa.show-sql": "false",
+        "spring.jpa.hibernate.ddl-auto": "none",
+        "spring.jpa.properties.javax.persistence.validation.mode": "none",
+        "spring.jpa.properties.hibernate.jdbc.batch_size": "100",
+        "spring.jpa.properties.hibernate.order_inserts": "true",
+        "management.endpoint.health.show-details": "always",
+        "management.endpoints.web.exposure.include": "*",
+        "spring.boot.admin.client.url": "http://localhost:4000",
+        "lesense.package.size": "100"
+      }'
+    volumes:
+      - ./lesense-batch:/lesense-batch
+      - ~/.m2:/root/.m2
+    command: mvn clean spring-boot:run
+    networks:
+      - lucas-networks
+
+
+networks:
+  lucas-networks:
+    driver: bridge
+
