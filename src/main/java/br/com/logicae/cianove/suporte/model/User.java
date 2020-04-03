@@ -34,6 +34,16 @@ public class User implements UserDetails {
           inverseJoinColumns = @JoinColumn(name = "cd_client"))
   private List<Client> clients;
 
+  @ManyToMany
+  @JoinTable(
+          name = "user_role",
+          joinColumns = @JoinColumn(name = "cd_user"),
+          inverseJoinColumns = @JoinColumn(name = "cd_role"))
+  private List<Role> roles;
+
+  @ManyToOne
+  @JoinColumn(name = "cd_job_position")
+  private JobPosition jobPosition;
 
   public Long getCdUser() {
     return cdUser;
@@ -110,5 +120,21 @@ public class User implements UserDetails {
   @Override
   public boolean isEnabled() {
     return true;
+  }
+
+  public JobPosition getJobPosition() {
+    return jobPosition;
+  }
+
+  public void setJobPosition(JobPosition jobPosition) {
+    this.jobPosition = jobPosition;
+  }
+
+  public List<Role> getRoles() {
+    return roles;
+  }
+
+  public void setRoles(List<Role> roles) {
+    this.roles = roles;
   }
 }
