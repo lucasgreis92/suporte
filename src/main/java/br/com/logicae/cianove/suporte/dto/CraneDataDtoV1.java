@@ -25,6 +25,16 @@ public class CraneDataDtoV1 {
 
     private UUID userId;
 
+    private AcionamentoDtoV1 acionamento;
+
+    public CraneDataDtoV1() {
+    }
+
+    public CraneDataDtoV1(LocalDateTime on, LocalDateTime off) {
+        this.on = on;
+        this.off = off;
+    }
+
     public UUID getId() {
         return id;
     }
@@ -95,5 +105,13 @@ public class CraneDataDtoV1 {
 
     public void setUserId(UUID userId) {
         this.userId = userId;
+    }
+
+    public AcionamentoDtoV1 getAcionamento() {
+        return acionamento;
+    }
+
+    public void setAcionamento(AcionamentoDtoV1 acionamento) {
+        this.acionamento = acionamento;
     }
 }

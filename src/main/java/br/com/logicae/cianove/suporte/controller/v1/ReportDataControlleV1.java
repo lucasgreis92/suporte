@@ -32,12 +32,22 @@ public class ReportDataControlleV1 {
 
     @RequestMapping(value = "communication/filter/relatorio.xlsx", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @ResponseBody
-    public byte[] gerarRelatoriodeComunicacao(@RequestParam(required = true) String device,
+    public byte[] gerarRelatorioComunicacao(@RequestParam(required = true) String device,
                     @RequestParam(required = false) Long port ,
                     @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime collectedIni,
                     @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime collectedFim) throws IOException {
 
-        return communicationService.gerarRelatoriodeComunicacao(device,port,collectedIni,collectedFim);
+        return communicationService.gerarRelatorioComunicacao(device,port,collectedIni,collectedFim);
+
+    }
+
+    @RequestMapping(value = "faturamento/filter/relatorio.xlsx", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @ResponseBody
+    public byte[] gerarRelatorioFaturamento(@RequestParam(required = true) String device,
+                                              @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime collectedIni,
+                                              @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime collectedFim) throws IOException {
+
+        return communicationService.gerarRelatorioFaturamento(device, collectedIni, collectedFim);
 
     }
 
