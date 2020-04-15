@@ -226,12 +226,15 @@ public class CommunicationService {
             createCol(selectedRow, colRel++, crane.getOn() == null ? "" : FORMATTER_HOUR.format(crane.getOff()),cellStyleBody);
             createCol(selectedRow, colRel++, findPeriodo(crane), cellStyleBody);
             createCol(selectedRow, colRel++,"", cellStyleSpace);
-            createCol(selectedRow, colRel++, FORMATTER_DAY.format(crane.getAcionamento().getOn()),cellStyleBody);
-            createCol(selectedRow, colRel++, FORMATTER_HOUR.format(crane.getAcionamento().getOn()),cellStyleBody);
-            createCol(selectedRow, colRel++, portaToDescricao(crane.getAcionamento().getPortOn()),cellStyleBodyPort);
-            createCol(selectedRow, colRel++, FORMATTER_HOUR.format(crane.getAcionamento().getOff()),cellStyleBody);
-            createCol(selectedRow, colRel++, portaToDescricao(crane.getAcionamento().getPortOff()),cellStyleBodyPort);
-            createCol(selectedRow, colRel++, diffDaysSecondsStr(crane.getAcionamento().getOn(), crane.getAcionamento().getOff()),cellStyleBody);
+            if (crane.getAcionamento() != null) {
+                createCol(selectedRow, colRel++, FORMATTER_DAY.format(crane.getAcionamento().getOn()),cellStyleBody);
+                createCol(selectedRow, colRel++, FORMATTER_HOUR.format(crane.getAcionamento().getOn()),cellStyleBody);
+                createCol(selectedRow, colRel++, portaToDescricao(crane.getAcionamento().getPortOn()),cellStyleBodyPort);
+                createCol(selectedRow, colRel++, FORMATTER_HOUR.format(crane.getAcionamento().getOff()),cellStyleBody);
+                createCol(selectedRow, colRel++, portaToDescricao(crane.getAcionamento().getPortOff()),cellStyleBodyPort);
+                createCol(selectedRow, colRel++, diffDaysSecondsStr(crane.getAcionamento().getOn(), crane.getAcionamento().getOff()),cellStyleBody);
+            }
+
         }
 
 

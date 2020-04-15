@@ -74,8 +74,10 @@ public class FatCompletoDtoV1 {
         for (CraneDataDtoV1 craneData : this.cicloAcionamento) {
             tempoTotal += craneData.getOff().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
                     - craneData.getOn().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-            tempoReal += craneData.getAcionamento().getOff().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-                    - craneData.getAcionamento().getOn().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+            if (craneData.getAcionamento() != null) {
+                tempoReal += craneData.getAcionamento().getOff().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                        - craneData.getAcionamento().getOn().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+            }
         }
     }
 
