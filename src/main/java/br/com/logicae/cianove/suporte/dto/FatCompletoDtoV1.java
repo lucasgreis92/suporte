@@ -85,7 +85,8 @@ public class FatCompletoDtoV1 {
             if (lastCrane != null
                     && lastCrane.getAcionamento().getOff()
                     .equals(lastCrane.getAcionamento().getOff().toLocalDate().atTime(23,59,59))){
-                crane.setOn(crane.getOn().toLocalDate().atTime(0,0,0));
+                crane.getAcionamento().setOn(crane.getOn().toLocalDate().atTime(0,0,0));
+                crane.getAcionamento().setPortOn(lastCrane.getAcionamento().getPortOff());
             }
             lastCrane = crane;
         }
