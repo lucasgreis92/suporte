@@ -83,6 +83,8 @@ public class FatCompletoDtoV1 {
         CraneDataDtoV1 lastCrane = null;
         for (CraneDataDtoV1 crane: this.cicloAcionamento) {
             if (lastCrane != null
+                    && lastCrane.getAcionamento() != null
+                    && crane.getAcionamento() != null
                     && lastCrane.getAcionamento().getOff()
                     .equals(lastCrane.getAcionamento().getOff().toLocalDate().atTime(23,59,59))){
                 crane.getAcionamento().setOn(crane.getOn().toLocalDate().atTime(0,0,0));
@@ -94,7 +96,7 @@ public class FatCompletoDtoV1 {
 
     private void setMotoresFinal() {
         this.cicloAcionamento.forEach(c -> {
-            if (c.getOn().toLocalDate().isBefore(c.getAcionamento().getOff().toLocalDate())) {
+            if (c.getAcionamento() != null && c.getOn().toLocalDate().isBefore(c.getAcionamento().getOff().toLocalDate())) {
                 c.getAcionamento().setOff(c.getOn().toLocalDate().atTime(23,59,59));
             }
         });
@@ -107,13 +109,16 @@ public class FatCompletoDtoV1 {
             }).sorted((a, b) -> {
                 return a.getOn().compareTo(b.getOn()) ;
             }).collect(Collectors.toList());
-            CraneDataDtoV1 craneIni = cranes.get(0);
-            cranes = cranes.stream().sorted((a, b) -> {
-                return b.getOff().compareTo(a.getOff()) ;
-            }).collect(Collectors.toList());
+            if (!cranes.isEmpty()) {
+                CraneDataDtoV1 craneIni = cranes.get(0);
+                cranes = cranes.stream().sorted((a, b) -> {
+                    return b.getOff().compareTo(a.getOff()) ;
+                }).collect(Collectors.toList());
 
-            CraneDataDtoV1 craneFim = cranes.get(0);
-            c.setAcionamento(new AcionamentoDtoV1(craneIni.getOn(),craneFim.getOff(), craneIni.getPort(), craneFim.getPort()));
+                CraneDataDtoV1 craneFim = cranes.get(0);
+                c.setAcionamento(new AcionamentoDtoV1(craneIni.getOn(),craneFim.getOff(), craneIni.getPort(), craneFim.getPort()));
+            }
+
         });
     }
 
