@@ -19,6 +19,8 @@ public class FatCompletoDtoV1 {
     private int maxSize = 0;
     private LocalDateTime collectedIni;
     private LocalDateTime collectedFim;
+    private Long tempoTotal = 0L;
+    private Long tempoReal = 0L;
 
     public FatCompletoDtoV1(List<CraneDataDtoV1> craneList,
                             LocalDateTime collectedIni,
@@ -63,8 +65,38 @@ public class FatCompletoDtoV1 {
         setarDtFinal(craneListAsc);
         setarDtInicio();
         setMotores();
-        //  adicionarIntervalos();
-        // mesclarIntervalos();
+        setMotoresFinal();
+        setMotoresInicio();
+        calcularTotais();
+    }
+
+    private void calcularTotais(){
+        for (CraneDataDtoV1 craneData : this.cicloAcionamento) {
+            tempoTotal += craneData.getOff().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                    - craneData.getOn().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+            tempoReal += craneData.getAcionamento().getOff().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                    - craneData.getAcionamento().getOn().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        }
+    }
+
+    private void setMotoresInicio() {
+        CraneDataDtoV1 lastCrane = null;
+        for (CraneDataDtoV1 crane: this.cicloAcionamento) {
+            if (lastCrane != null
+                    && lastCrane.getAcionamento().getOff()
+                    .equals(lastCrane.getAcionamento().getOff().toLocalDate().atTime(23,59,59))){
+                crane.setOn(crane.getOn().toLocalDate().atTime(0,0,0));
+            }
+            lastCrane = crane;
+        }
+    }
+
+    private void setMotoresFinal() {
+        this.cicloAcionamento.forEach(c -> {
+            if (c.getOn().toLocalDate().isBefore(c.getAcionamento().getOff().toLocalDate())) {
+                c.getAcionamento().setOff(c.getOn().toLocalDate().atTime(23,59,59));
+            }
+        });
     }
 
     private void setMotores() {
@@ -75,11 +107,11 @@ public class FatCompletoDtoV1 {
                 return a.getOn().compareTo(b.getOn()) ;
             }).collect(Collectors.toList());
             CraneDataDtoV1 craneIni = cranes.get(0);
-            cranes.stream().sorted((a, b) -> {
-                return b.getOn().compareTo(a.getOn()) ;
+            cranes = cranes.stream().sorted((a, b) -> {
+                return b.getOff().compareTo(a.getOff()) ;
             }).collect(Collectors.toList());
 
-            CraneDataDtoV1 craneFim = cranes.get(cranes.size()-1);
+            CraneDataDtoV1 craneFim = cranes.get(0);
             c.setAcionamento(new AcionamentoDtoV1(craneIni.getOn(),craneFim.getOff(), craneIni.getPort(), craneFim.getPort()));
         });
     }
@@ -103,27 +135,6 @@ public class FatCompletoDtoV1 {
 
             inicio = inicio.plusDays(1l);
         }
-/*
-        List<CraneDataDtoV1> addList = new ArrayList<>();
-        for (int i = 0; i < cicloAcionamento.size()-1; i++) {
-            if (cicloAcionamento.get(i).getOff().equals(cicloAcionamento.get(i).getOff().toLocalDate().atTime(23,59,59))
-                    && cicloAcionamento.get(i+1).getOn().equals(cicloAcionamento.get(i+1).getOn().toLocalDate().atTime(0,0,0))){
-                LocalDateTime ldt1 = cicloAcionamento.get(i).getOn().toLocalDate().atTime(0,0,0);
-                LocalDateTime ldt2 = cicloAcionamento.get(i+1).getOn().toLocalDate().atTime(0,0,0);
-                long difDay = ((ldt2.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-                        - ldt1.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()) / 1000) / 86400;
-
-                if (difDay > 1) {
-                    for (int x = 1; x < difDay; x++ ) {
-                        addList.add(new CraneDataDtoV1(ldt1.plusDays(x).toLocalDate().atTime(0,0,0),
-                                ldt1.plusDays(x).toLocalDate().atTime(23,59,59) ));
-                    }
-                }
-            }
-        }
-        if (addList.size() > 0) {
-            cicloAcionamento.addAll(addList);
-        }*/
         cicloAcionamento.sort( (a, b) -> {
             return a.getOn().compareTo(b.getOn());
         });
@@ -269,5 +280,17 @@ public class FatCompletoDtoV1 {
 
     public List<CraneDataDtoV1> getCicloAcionamento() {
         return cicloAcionamento;
+    }
+
+    public List<CraneDataDtoV1> getMotores() {
+        return motores;
+    }
+
+    public Long getTempoTotal() {
+        return tempoTotal;
+    }
+
+    public Long getTempoReal() {
+        return tempoReal;
     }
 }

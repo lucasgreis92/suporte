@@ -188,15 +188,15 @@ public class CommunicationService {
         createCol(newRow,col++,"Ligado " ,cellStyleTitle);
         createCol(newRow,col++,"", cellStyleTitle);
         createCol(newRow,col++,"", cellStyleTitle);
-        createCol(newRow,col++,"Tempo Real " ,cellStyleTitle);
-        createCol(newRow,col++,diffDaysSecondsStr(dataRel.getTempoCraneList().get(0) / 1000), cellStyleTitle);
+        createCol(newRow,col++,"Tempo Total " ,cellStyleTitle);
+        createCol(newRow,col++,diffDaysSecondsStr(dataRel.getTempoTotal() / 1000), cellStyleTitle);
         createCol(newRow,col++,"", cellStyleSpace);
         createCol(newRow,col++,"Tempo Operação " ,cellStyleTitle);
         createCol(newRow,col++,"", cellStyleTitle);
         createCol(newRow,col++,"", cellStyleTitle);
         createCol(newRow,col++,"", cellStyleTitle);
         createCol(newRow,col++,"Tempo Total " ,cellStyleTitle);
-        createCol(newRow,col++,diffDaysSecondsStr(dataRel.getTempoCraneList().get(0) / 1000), cellStyleTitle);
+        createCol(newRow,col++,diffDaysSecondsStr(dataRel.getTempoReal() / 1000), cellStyleTitle);
 
         col = 0;
         newRow = sheet.createRow(row++);
@@ -316,9 +316,9 @@ public class CommunicationService {
             case 1:
                 return "Em Movimento                      ";
             case 2:
-                return "Motor do Carro                    ";
-            case 3:
                 return "Motor de Giro                     ";
+            case 3:
+                return "Motor do Carro                    ";
             case 4:
                 return "Motor de Elevação                 ";
             case 5:
