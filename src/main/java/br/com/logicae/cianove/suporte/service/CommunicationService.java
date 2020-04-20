@@ -1,11 +1,9 @@
 package br.com.logicae.cianove.suporte.service;
 
-import br.com.logicae.cianove.suporte.dto.CommunicationDtoV1;
-import br.com.logicae.cianove.suporte.dto.CraneDataDtoV1;
-import br.com.logicae.cianove.suporte.dto.FatCompletoDtoV1;
-import br.com.logicae.cianove.suporte.dto.SensorsDtoV1;
+import br.com.logicae.cianove.suporte.dto.*;
 import br.com.logicae.cianove.suporte.service.client.geo.GCraneDataClientService;
 import br.com.logicae.cianove.suporte.service.client.geo.GSensorsClientService;
+import br.com.logicae.cianove.suporte.service.client.geo.GTagsClientService;
 import br.com.logicae.cianove.suporte.service.client.lesense.LSensorsClientService;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.*;
@@ -33,6 +31,9 @@ public class CommunicationService {
 
     @Autowired
     private GSensorsClientService gSensorsClientService;
+
+    @Autowired
+    private GTagsClientService gTagsClientService;
 
     static final int MINUTES_PER_HOUR = 60;
     static final int SECONDS_PER_MINUTE = 60;
@@ -102,9 +103,10 @@ public class CommunicationService {
     public byte[] gerarRelatorioFaturamento(String device, LocalDateTime collectedIni, LocalDateTime collectedFim) throws IOException {
         Long tempoIni = System.currentTimeMillis();
         List<CraneDataDtoV1> cranes = gCraneDataClientService.findByFilter(device,null,collectedIni,collectedFim,true);
+        List<TagsDtoV1> tags = gTagsClientService.findByDeviceSerial(device);
         System.out.println("tempo sql " + ((System.currentTimeMillis() - tempoIni) / 1000) + " segundos");
         tempoIni = System.currentTimeMillis();
-        FatCompletoDtoV1 fatCompletoDtoV1 = new FatCompletoDtoV1(cranes, collectedIni, collectedFim);
+        FatCompletoDtoV1 fatCompletoDtoV1 = new FatCompletoDtoV1(cranes, collectedIni, collectedFim, tags);
         System.out.println("tempo rotina " + ((System.currentTimeMillis() - tempoIni) / 1000) + " segundos");
         Workbook workbook = new SXSSFWorkbook();
         CellStyle cellStyleTitle = createCellStyleTitle(workbook);
@@ -177,11 +179,23 @@ public class CommunicationService {
         int col = 0;
         createCol(newRow,col++,"Equipamento: ", cellStyleTitle);
         createCol(newRow,col++, listCrane.get(0).get(0).getDeviceSerial(), cellStyleTitle);
+
+        newRow = sheet.createRow(row++);
+        col = 0;
+        createCol(newRow,col++,"Tags: " ,cellStyleTitle);
+        for (String tag : dataRel.getTagList()) {
+            createCol(newRow,col++,tag ,cellStyleTitle);
+        }
+
         newRow = sheet.createRow(row++);
         col = 0;
         createCol(newRow,col++,"Intervalo: " ,cellStyleTitle);
         createCol(newRow,col++,FORMATTER_DAY.format(dataRel.getCollectedIni()) ,cellStyleTitle);
         createCol(newRow,col++,FORMATTER_DAY.format(dataRel.getCollectedFim()) ,cellStyleTitle);
+
+        newRow = sheet.createRow(row++);
+        col = 0;
+        createCol(newRow,col++,"" ,cellStyleTitle);
 
         newRow = sheet.createRow(row++);
         col = 0;

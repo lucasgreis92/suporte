@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,14 +22,25 @@ public class FatCompletoDtoV1 {
     private LocalDateTime collectedFim;
     private Long tempoTotal = 0L;
     private Long tempoReal = 0L;
+    private List<String> tagList;
 
     public FatCompletoDtoV1(List<CraneDataDtoV1> craneList,
                             LocalDateTime collectedIni,
-                            LocalDateTime collectedFim) {
+                            LocalDateTime collectedFim,
+                            List<TagsDtoV1> tags) {
 
         this.craneList = craneList;
         this.collectedIni = collectedIni;
         this.collectedFim = collectedFim;
+        this.tagList = new ArrayList<>();
+        if (tags != null) {
+            tags.forEach( t -> {
+                this.tagList.addAll(Arrays.asList(t.getTags()
+                        .replace("{","")
+                        .replace("}","")
+                        .split(",")));
+            });
+        }
         init();
     }
 
@@ -68,6 +80,10 @@ public class FatCompletoDtoV1 {
         setMotoresFinal();
         setMotoresInicio();
         calcularTotais();
+
+        cicloAcionamento = cicloAcionamento.stream().filter( c -> {
+            return !c.getOn().isBefore(collectedIni) && !c.getOn().isAfter(collectedFim);
+        }).collect(Collectors.toList());
     }
 
     private void calcularTotais(){
@@ -300,5 +316,9 @@ public class FatCompletoDtoV1 {
 
     public Long getTempoReal() {
         return tempoReal;
+    }
+
+    public List<String> getTagList() {
+        return tagList;
     }
 }
